@@ -29,7 +29,7 @@
 :SETVAR Schema                                  "Dad"
 
 --------------------------------------------------------------------------------
--- Drop Tables.
+-- Drop the Tables if/as appropriate.
 --------------------------------------------------------------------------------
 
 IF OBJECT_ID(N'$(Schema).CentralSecurityServiceDatabaseVersions', N'U') IS NOT NULL
@@ -45,11 +45,15 @@ GO
 -- NOTE: In Future Versions *ONLY* DELETE the relevant Database Version Row and leave the Table otherwise intact.
 DROP TABLE IF EXISTS $(Schema).CentralSecurityServiceDatabaseVersions;
 
+DROP TABLE IF EXISTS $(Schema).[References];
+
+DROP TABLE IF EXISTS $(Schema).ReferenceTypes;
+
 --------------------------------------------------------------------------------
 -- Drop the Unique Reference Id if/as appropriate.
 --------------------------------------------------------------------------------
 
-DROP SEQUENCE $(Schema).UniqueReferenceId;
+DROP SEQUENCE IF EXISTS $(Schema).UniqueReferenceId;
 
 --------------------------------------------------------------------------------
 -- Drop Schema if/as appropriate.

@@ -118,6 +118,92 @@ END
 GO
 
 --------------------------------------------------------------------------------
+-- Create Reference Types Table if/as appropriate.
+--------------------------------------------------------------------------------
+
+IF OBJECT_ID(N'$(Schema).ReferenceTypes', N'U') IS NULL
+BEGIN
+    PRINT N'Creating the ReferenceTypes Table.';
+
+    CREATE TABLE $(Schema).ReferenceTypes
+    (
+        ReferenceTypeId                             SmallInt NOT NULL CONSTRAINT PK_$(Schema)_ReferenceTypes PRIMARY KEY,
+        ReferenceType                               NVarChar(128) NOT NULL,
+        CreatedDateTimeUtc                          DateTime2(7) NOT NULL CONSTRAINT DF_$(Schema)_ReferenceTypes_CreatedDateTimeUtc DEFAULT GetUtcDate(),
+        LastUpdatedDateTimeUtc                      DateTime2(7) NULL
+    );
+
+    INSERT INTO $(Schema).ReferenceTypes
+        (ReferenceTypeId, ReferenceType)
+    VALUES
+        (  0, N'Image'),
+        (  1, N'Url');
+END
+GO
+
+DECLARE @Error AS Int = @@ERROR;
+IF (@Error != 0)
+BEGIN
+    IF @@TRANCOUNT > 0
+        ROLLBACK TRANSACTION;
+    BEGIN TRANSACTION;
+    SET CONTEXT_INFO 0x01;
+END
+GO
+
+--------------------------------------------------------------------------------
+-- Create References Table if/as appropriate.
+--------------------------------------------------------------------------------
+
+IF OBJECT_ID(N'$(Schema).[References]', N'U') IS NULL
+BEGIN
+    PRINT N'Creating the References Table.';
+
+    CREATE TABLE $(Schema).[References]
+    (
+        ReferenceId                                 BigInt NOT NULL CONSTRAINT PK_$(Schema)_References PRIMARY KEY IDENTITY(0, 1),
+        UniqueReferenceId                           BigInt NOT NULL,
+        SubReferenceId                              Int NOT NULL,
+        ReferenceTypeId                             SmallInt NOT NULL CONSTRAINT FK_$(Schema)_References_ReferenceTypes FOREIGN KEY (ReferenceTypeId) REFERENCES $(Schema).ReferenceTypes(ReferenceTypeId),
+        ThumbnailRelativeFileName                   NVarChar(512) NULL,
+        ReferenceName                               NVarChar(512) NOT NULL,
+        SubjectNames                                NVarChar(512) NULL,
+        Categorisations                             NVarChar(512) NOT NULL,
+        CreatedDateTimeUtc                          DateTime2(7) NOT NULL CONSTRAINT DF_$(Schema)_References_CreatedDateTimeUtc DEFAULT GetUtcDate(),
+        LastUpdatedDateTimeUtc                      DateTime2(7) NULL,
+
+        CONSTRAINT UQ_$(Schema)_References_ReferenceIds UNIQUE (UniqueReferenceId, SubReferenceId)
+    );
+END
+GO
+
+DECLARE @Error AS Int = @@ERROR;
+IF (@Error != 0)
+BEGIN
+    IF @@TRANCOUNT > 0
+        ROLLBACK TRANSACTION;
+    BEGIN TRANSACTION;
+    SET CONTEXT_INFO 0x01;
+END
+GO
+
+IF INDEXPROPERTY(OBJECT_ID(N'$(Schema).[References]'), 'IX_$(Schema)_References_UniqueReferenceId', 'IndexId') IS NULL
+BEGIN
+    CREATE NONCLUSTERED INDEX IX_$(Schema)_References_UniqueReferenceId ON $(Schema).[References](UniqueReferenceId) INCLUDE (SubReferenceId);
+END
+GO
+
+DECLARE @Error AS Int = @@ERROR;
+IF (@Error != 0)
+BEGIN
+    IF @@TRANCOUNT > 0
+        ROLLBACK TRANSACTION;
+    BEGIN TRANSACTION;
+    SET CONTEXT_INFO 0x01;
+END
+GO
+
+--------------------------------------------------------------------------------
 -- Insert Version.
 --------------------------------------------------------------------------------
 
