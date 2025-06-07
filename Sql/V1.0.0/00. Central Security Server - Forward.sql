@@ -137,7 +137,8 @@ BEGIN
         (ReferenceTypeId, ReferenceType)
     VALUES
         (  0, N'Image'),
-        (  1, N'Url');
+        (  1, N'Video Url'),
+        (  2, N'Url');
 END
 GO
 
@@ -165,9 +166,9 @@ BEGIN
         UniqueReferenceId                           BigInt NOT NULL,
         SubReferenceId                              Int NOT NULL,
         ReferenceTypeId                             SmallInt NOT NULL CONSTRAINT FK_$(Schema)_References_ReferenceTypes FOREIGN KEY (ReferenceTypeId) REFERENCES $(Schema).ReferenceTypes(ReferenceTypeId),
-        ThumbnailRelativeFileName                   NVarChar(512) NULL,
+        ThumbnailFileName							NVarChar(512) NULL,
         ReferenceName                               NVarChar(512) NOT NULL,
-        SubjectNames                                NVarChar(512) NULL,
+        Description                                 NVarChar(512) NULL,
         Categorisations                             NVarChar(512) NOT NULL,
         CreatedDateTimeUtc                          DateTime2(7) NOT NULL CONSTRAINT DF_$(Schema)_References_CreatedDateTimeUtc DEFAULT GetUtcDate(),
         LastUpdatedDateTimeUtc                      DateTime2(7) NULL,
