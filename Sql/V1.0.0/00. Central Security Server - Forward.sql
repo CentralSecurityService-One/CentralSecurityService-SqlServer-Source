@@ -165,8 +165,9 @@ BEGIN
         ReferenceId                                 BigInt NOT NULL CONSTRAINT PK_$(Schema)_References PRIMARY KEY IDENTITY(0, 1),
         UniqueReferenceId                           BigInt NOT NULL,
         SubReferenceId                              Int NOT NULL,
+        Redacted                                    Bit NOT NULL CONSTRAINT DF_$(Schema)_References_Redacted DEFAULT (0),
         ReferenceTypeId                             SmallInt NOT NULL CONSTRAINT FK_$(Schema)_References_ReferenceTypes FOREIGN KEY (ReferenceTypeId) REFERENCES $(Schema).ReferenceTypes(ReferenceTypeId),
-        ThumbnailFileName							NVarChar(512) NULL,
+        ThumbnailFileName                           NVarChar(512) NULL,
         ReferenceName                               NVarChar(512) NOT NULL,
         Description                                 NVarChar(512) NULL,
         Categorisations                             NVarChar(512) NOT NULL,
@@ -177,6 +178,24 @@ BEGIN
     );
 END
 GO
+
+/*
+
+:SETVAR Schema                                  "Dad"
+
+-- Add the Redacted column
+ALTER TABLE $(Schema).[References]
+ADD Redacted Bit NOT NULL
+    CONSTRAINT DF_$(Schema)_References_Redacted DEFAULT (0);
+
+-- Drop the Redacted column
+ALTER TABLE $(Schema).[References]
+DROP CONSTRAINT DF_$(Schema)_References_Redacted;
+
+ALTER TABLE $(Schema).[References]
+DROP COLUMN Redacted;
+
+*/
 
 DECLARE @Error AS Int = @@ERROR;
 IF (@Error != 0)
