@@ -1,5 +1,5 @@
  --------------------------------------------------------------------------------
--- Copyright © 2025+ Éamonn Anthony Duffy. All Rights Reserved.
+-- Copyright © 2025+ Eamonn Anthony Duffy. All Rights Reserved.
 --------------------------------------------------------------------------------
 --
 -- Version: V1.0.0.
